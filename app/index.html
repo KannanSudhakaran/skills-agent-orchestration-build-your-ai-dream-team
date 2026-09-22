@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer>
+      (function () {
+        "use strict";
+
+        const requiredFields = [
+          "name",
+          "owner",
+          "status",
+          "recentActivity",
+          "priority",
+          "summary"
+        ];
+
+        function createDetail(documentRef, label, value, className) {
+          const term = documentRef.createElement("dt");
+          term.textContent = label;
+
+          const description = documentRef.createElement("dd");
+          if (className) {
+            description.className = className;
+          }
+          description.textContent = value;
+
+          return [term, description];
+        }
+
+        function isProjectRecord(project) {
+          return project !== null &&
+            typeof project === "object" &&
+            !Array.isArray(project) &&
+            requiredFields.every(function (field) {
+              return typeof project[field] === "string" && project[field].trim().length > 0;
+            });
+        }
+
+        function renderProjects(projects, dashboard) {
+          const fragment = document.createDocumentFragment();
+
+          projects.forEach(function (project) {
+            const card = document.createElement("article");
+            card.className = "project-card";
+
+            const heading = document.createElement("h2");
+            heading.textContent = project.name;
+            card.appendChild(heading);
+
+            const details = document.createElement("dl");
+            [
+              ["Owner", project.owner],
+              ["Status", project.status, "project-status"],
+              ["Recent activity", project.recentActivity, "recent-activity"],
+              ["Priority", project.priority, "project-priority"],
+              ["Contributor summary", project.summary]
+            ].forEach(function (detail) {
+              const elements = createDetail(document, detail[0], detail[1], detail[2]);
+              details.appendChild(elements[0]);
+              details.appendChild(elements[1]);
+            });
+
+            card.appendChild(details);
+            fragment.appendChild(card);
+          });
+
+          dashboard.replaceChildren(fragment);
+        }
+
+        function showState(dashboard, status, message) {
+          dashboard.replaceChildren();
+          dashboard.dataset.state = status;
+          const stateMessage = document.createElement("p");
+          stateMessage.className = "dashboard-message";
+          stateMessage.textContent = message;
+          dashboard.appendChild(stateMessage);
+        }
+
+        async function loadDashboard() {
+          const dashboard = document.querySelector(".dashboard");
+          const status = document.querySelector("#dashboard-status");
+
+          showState(dashboard, "loading", "Loading project updates…");
+          dashboard.setAttribute("aria-busy", "true");
+          status.textContent = "Loading project data.";
+
+          try {
+            const response = await fetch("project-data.json", {
+              headers: { "Accept": "application/json" }
+            });
+
+            if (!response.ok) {
+              throw new Error("fetch");
+            }
+
+            let data;
+            try {
+              data = await response.json();
+            } catch (error) {
+              throw new Error("parse");
+            }
+
+            if (data === null || typeof data !== "object" || !Array.isArray(data.projects)) {
+              throw new Error("invalid-data");
+            }
+
+            if (!data.projects.every(isProjectRecord)) {
+              throw new Error("invalid-data");
+            }
+
+            if (data.projects.length === 0) {
+              showState(dashboard, "empty", "No projects are available right now. Check back after the next project update.");
+              status.textContent = "No projects are available.";
+              return;
+            }
+
+            renderProjects(data.projects, dashboard);
+            dashboard.dataset.state = "ready";
+            status.textContent = data.projects.length + " projects loaded.";
+          } catch (error) {
+            const messages = {
+              fetch: "We could not load project data. Confirm that the dashboard is being served locally, then try again.",
+              parse: "Project data could not be read because it is not valid JSON. Please correct the data file and reload.",
+              "invalid-data": "Project data is incomplete or has an unexpected format. Each project needs all required details."
+            };
+            showState(dashboard, "error", messages[error.message] || "An unexpected error prevented the dashboard from loading. Please reload and try again.");
+            status.textContent = "Project data could not be loaded.";
+          } finally {
+            dashboard.setAttribute("aria-busy", "false");
+          }
+        }
+
+        loadDashboard();
+      }());
+    </script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Project Pulse</h1>
+        <p>Current project health, ownership, and recent work for contributors.</p>
+      </header>
+      <p id="dashboard-status" role="status" aria-live="polite">Preparing project dashboard.</p>
+      <section class="dashboard" aria-label="Project dashboard" aria-describedby="dashboard-status" aria-busy="true">
+        <p class="dashboard-message">Loading project updates…</p>
+      </section>
+    </main>
+  </body>
+</html>

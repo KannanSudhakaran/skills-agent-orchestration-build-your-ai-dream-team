@@ -1,0 +1,36 @@
+{
+  "projects": [
+    {
+      "name": "Member Onboarding Refresh",
+      "owner": "Priya Nair",
+      "status": "On track",
+      "recentActivity": "Usability testing completed with eight new members; the team is incorporating the top three findings.",
+      "priority": "High",
+      "summary": "Simplifies account setup and gives contributors a clearer first path to their tools, documentation, and community channels."
+    },
+    {
+      "name": "Community Knowledge Base",
+      "owner": "Marcus Lee",
+      "status": "At risk",
+      "recentActivity": "Migration scripts are ready, but article owners still need to review 14 outdated support guides.",
+      "priority": "High",
+      "summary": "Moves shared project knowledge into a searchable home so contributors can find current guidance without relying on private messages."
+    },
+    {
+      "name": "Accessibility Issue Triage",
+      "owner": "Elena García",
+      "status": "On track",
+      "recentActivity": "The weekly triage rotation is staffed through next month and three keyboard-navigation fixes were merged.",
+      "priority": "Medium",
+      "summary": "Creates a reliable process for reviewing accessibility reports and connecting contributors with actionable, well-scoped fixes."
+    },
+    {
+      "name": "Release Notes Automation",
+      "owner": "Jordan Kim",
+      "status": "Blocked",
+      "recentActivity": "The draft generator works in staging; publication is waiting for repository token approval from platform operations.",
+      "priority": "Medium",
+      "summary": "Generates a readable release-notes draft from merged work so maintainers can spend more time reviewing context and less time collecting it."
+    }
+  ]
+}

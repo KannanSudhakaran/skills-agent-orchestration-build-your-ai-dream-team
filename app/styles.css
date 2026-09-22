@@ -1,0 +1,467 @@
+/*
+  Project Pulse visual system
+  The component selectors intentionally accept both class-based and semantic
+  markup so the presentation remains resilient to small renderer changes.
+*/
+
+:root {
+  color-scheme: light;
+  --ink: #17233b;
+  --muted: #52627d;
+  --subtle: #6d7d98;
+  --canvas: #f4f7fc;
+  --surface: #ffffff;
+  --line: #d8e1ef;
+  --brand: #3154c8;
+  --brand-dark: #233d9b;
+  --focus: #f08b28;
+  --shadow: 0 10px 28px rgb(24 44 84 / 10%);
+  --shadow-hover: 0 16px 34px rgb(24 44 84 / 16%);
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 0;
+  background: var(--canvas);
+}
+
+body {
+  min-width: 0;
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 92% -10%, #dce8ff 0, transparent 29rem),
+    var(--canvas);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: 1rem;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+}
+
+body > header,
+.page-header,
+.dashboard-header {
+  width: min(100% - 2rem, 76rem);
+  margin: 0 auto;
+}
+
+body > header,
+.page-header,
+main > header {
+  padding: clamp(2rem, 5vw, 4.5rem) 0 clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.page-header,
+.dashboard-header,
+main > header {
+  display: grid;
+  gap: 0.5rem;
+}
+
+h1,
+h2,
+h3,
+p {
+  overflow-wrap: anywhere;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--ink);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+h1 {
+  max-width: 18ch;
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+}
+
+h1 + p,
+.page-header > p,
+.dashboard-header > p,
+main > header > p {
+  max-width: 66ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 2vw, 1.125rem);
+}
+
+main,
+.dashboard-wrapper,
+.dashboard-container {
+  width: min(100% - 2rem, 76rem);
+  margin: 0 auto;
+  padding-bottom: clamp(2rem, 5vw, 4.5rem);
+}
+
+/* Stable dashboard hook: gracefully scales from one column to a card grid. */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  align-items: stretch;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  min-width: 0;
+}
+
+/* Stable card hook. Cards remain readable with long JSON values. */
+.project-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1rem;
+  padding: clamp(1.125rem, 3vw, 1.5rem);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: border-color 160ms ease, box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.project-card:hover {
+  border-color: #b9c9e4;
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.project-card > header,
+.project-card-header {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.project-card h2,
+.project-card h3,
+.project-name {
+  min-width: 0;
+  margin: 0;
+  font-size: clamp(1.2rem, 2.5vw, 1.4rem);
+  overflow-wrap: anywhere;
+}
+
+.project-summary,
+.summary {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.project-card dl,
+.project-details,
+.project-meta {
+  display: grid;
+  grid-template-columns: minmax(5.6rem, auto) minmax(0, 1fr);
+  gap: 0.625rem 0.875rem;
+  margin: auto 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.project-card dt,
+.field-label,
+.label {
+  color: var(--subtle);
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.project-card dd,
+.field-value,
+.value {
+  min-width: 0;
+  margin: 0;
+  color: var(--ink);
+  font-weight: 550;
+  overflow-wrap: anywhere;
+}
+
+/* Text remains the primary status signal; colour only reinforces its meaning. */
+.status,
+.project-status,
+[data-status] {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.28rem 0.6rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: #254b98;
+  background: #edf3ff;
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.status::before,
+.project-status::before,
+[data-status]::before {
+  content: "Status:";
+  flex: 0 0 auto;
+  font-size: 0.7em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.status-on-track,
+.status--on-track,
+[data-status="on track" i] {
+  color: #17623e;
+  background: #eaf8ef;
+}
+
+.status-at-risk,
+.status--at-risk,
+[data-status="at risk" i] {
+  color: #8a4a00;
+  background: #fff4dc;
+}
+
+.status-blocked,
+.status--blocked,
+[data-status="blocked" i] {
+  color: #a12731;
+  background: #fff0f1;
+}
+
+.priority,
+.project-priority,
+[data-priority] {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  padding: 0.28rem 0.6rem;
+  border: 1px solid #aebbd1;
+  border-radius: 0.45rem;
+  color: #33445f;
+  background: #f4f7fb;
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.priority::before,
+.project-priority::before,
+[data-priority]::before {
+  content: "Priority: ";
+  color: var(--subtle);
+  font-size: 0.7em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.priority-high,
+.priority--high,
+[data-priority="high" i] {
+  border-style: solid;
+  border-color: #a12731;
+  color: #8b1f29;
+  background: #fff0f1;
+}
+
+.priority-medium,
+.priority--medium,
+[data-priority="medium" i] {
+  border-color: #936000;
+  color: #794c00;
+  background: #fff7e6;
+}
+
+.priority-low,
+.priority--low,
+[data-priority="low" i] {
+  border-color: #2c687d;
+  color: #15556b;
+  background: #eaf7fb;
+}
+
+.recent-activity,
+.activity {
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem 0.875rem;
+  border-left: 3px solid #9bb4eb;
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: #33445f;
+  background: #f4f7fd;
+  overflow-wrap: anywhere;
+}
+
+.recent-activity::before,
+.activity::before {
+  content: "Recent activity";
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--subtle);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Loading, error, and empty messages are deliberately distinct but textual. */
+.loading-state,
+.error-state,
+.empty-state,
+[role="status"],
+[role="alert"] {
+  width: min(100%, 48rem);
+  margin: 0 auto;
+  padding: 1rem 1.125rem;
+  border: 1px solid #b7c7e5;
+  border-radius: 0.75rem;
+  color: #243f7b;
+  background: #edf3ff;
+  box-shadow: 0 5px 14px rgb(29 56 107 / 8%);
+  overflow-wrap: anywhere;
+}
+
+#dashboard-status {
+  margin: 0 0 clamp(1rem, 2.5vw, 1.5rem);
+  font-size: 0.9375rem;
+}
+
+.dashboard-message {
+  width: min(100%, 48rem);
+  margin: 0;
+  padding: 1rem 1.125rem;
+  border: 1px solid #b7c7e5;
+  border-radius: 0.75rem;
+  color: #243f7b;
+  background: #edf3ff;
+  box-shadow: 0 5px 14px rgb(29 56 107 / 8%);
+  overflow-wrap: anywhere;
+}
+
+/* The renderer keeps state on the dashboard, so its message stays meaningful
+   even when loading, empty, and error views share the same paragraph hook. */
+.dashboard[data-state="loading"],
+.dashboard[data-state="empty"],
+.dashboard[data-state="error"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.dashboard[data-state="empty"] .dashboard-message {
+  border-color: #97bba7;
+  color: #255b3d;
+  background: #eff9f2;
+}
+
+.dashboard[data-state="error"] .dashboard-message {
+  border-color: #b9515a;
+  color: #7f2028;
+  background: #fff1f1;
+}
+
+.error-state,
+[role="alert"] {
+  border-color: #b9515a;
+  color: #7f2028;
+  background: #fff1f1;
+}
+
+.empty-state {
+  border-color: #97bba7;
+  color: #255b3d;
+  background: #eff9f2;
+}
+
+a,
+button,
+input,
+select,
+textarea,
+[tabindex]:not([tabindex="-1"]) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: var(--brand-dark);
+  font-weight: 700;
+  text-underline-offset: 0.16em;
+}
+
+button {
+  min-height: 2.75rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid var(--brand-dark);
+  border-radius: 0.6rem;
+  color: #fff;
+  background: var(--brand);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (max-width: 38rem) {
+  body > header,
+  .page-header,
+  .dashboard-header,
+  main,
+  .dashboard-wrapper,
+  .dashboard-container {
+    width: min(100% - 1.25rem, 76rem);
+  }
+
+  .project-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .project-card > header,
+  .project-card-header {
+    flex-wrap: wrap;
+  }
+
+  .project-card dl,
+  .project-details,
+  .project-meta {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+
+  .project-card dd,
+  .field-value,
+  .value {
+    margin-bottom: 0.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
